@@ -58,17 +58,29 @@ class Player(Entity):
     self.move()
     screen.blit(self.img, self.coords, self.imgSlice)
 
-class Background:
-  def __init__(self) -> None:
-    self.width = 246
-    self.height = 133
+class Spritesheet:
+  def __init__(self, filepath):
+    self.sheet = pygame.image.load(filepath).convert()
+  
+  def image_at(self, rectangle):
+    rect = pygame.Rect(rectangle)
+    image = pygame.Surface(rect.size).convert()
+    image.blit(self.sheet, (0,0), rect)
+    return image
+  
+  def images_at(self, rectangle):
+    return [self.image_at(rectangle) for rect in rectangle]
 
-
+  def load_strip(self, rect, image_count):
+    tups = [(rect[0]+rect[2]*x, rect[1], rect[2], rect[3]) for x in range(image_count)]
+    return self.images_at(tups)
+    
 
     
-player = Player('assets/entities/rpgcritters2.png',0,0,0,0,50,50,30,0,0,0,0,0,0,0)
+player = Player('assets/world/spritesheet.png',0,0,0,128,16,16,30,0,0,0,0,0,0,0)
 entities = [player]
-
+spritesheet = Spritesheet('assets/world/spritesheet.png')
+image = spritesheet.image_at((0,0,16,16))
 
 while True:
   for event in pygame.event.get():
@@ -83,6 +95,9 @@ while True:
     screen.fill((0,0,0))
     startSurface = font.render("Press any key to start", False, "white")
     screen.blit(startSurface, ((SCREEN_WIDTH - startSurface.get_width()) / 2, (SCREEN_HEIGHT - startSurface.get_height()) / 2))
+    # image = spritesheet.image_at((0,144,16,16))
+    screen.blit(image, (0,0))
+
 
 
   elif gameState == "overworld":
@@ -91,7 +106,7 @@ while True:
       entity.draw(screen)
     if player.moving:
       randomBattleChance = random.randint(0, encounterRates["medium"])
-      if randomBattleChance <= 5:
+      if randomBattleChance < 0:
         gameState = "battle"
 
 
