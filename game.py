@@ -1,5 +1,6 @@
 import pygame
 import random
+from spritesheet import *
 
 SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 480
@@ -16,11 +17,6 @@ font = pygame.font.SysFont("Arial", 16)
 
 locations = {"test": "assets/world/test.png"}
 encounterRates = {"frequent": 1000, "medium": 2500, "rare": 5000, "none": 0}
-testTown = pygame.image.load(locations["test"]).convert()
-testTown = pygame.transform.scale(testTown, (testTown.get_width() * scale, testTown.get_height() * scale))
-scene_pos_x = -176 * scale
-scene_pos_y = -160 * scale
-
 
 
 class Entity:
@@ -46,7 +42,7 @@ class Entity:
         self.img = self.imgs[self.facing][2]
       else:
         self.img = self.imgs[self.facing][0]
-      self.img = pygame.transform.scale(self.img, (self.img.get_width() * scale, self.img.get_height() * scale))
+      self.img = pygame.transform.scale(self.img, ((self.img.get_width() * scale) + 8, (self.img.get_height() * scale) + 8))
       screen.blit(self.img, self.coords)
 
 class Player(Entity):  
@@ -98,38 +94,18 @@ class Player(Entity):
       self.pixels_per_action = 16 * scale
       self.moving = ""
 
-      
-class Map:
-  def __init__(self, csv, exits=[]):
-    self.csv = csv
-    self.exits = exits
-    
 
-def sprite_sheet(size,file):
+spritesheet = Sprites(16,'assets/world/spritesheet.png')
 
-  len_sprt_x = size
-  len_sprt_y = size
-  sprt_rect_x = 0 
-  sprt_rect_y = 0
+scene_pos_x = (0 * scale)
+scene_pos_y = (0 * scale)
+testTown = Map('mapbuild/test1.csv', scene_pos_x, scene_pos_y, spritesheet)
 
-  sheet = pygame.image.load(file).convert_alpha()
-  sheet_rect = sheet.get_rect()
-  sprites = []
-  for i in range(0,sheet_rect.height-len_sprt_y,size):#rows
-      for i in range(0,sheet_rect.width-len_sprt_x,size):#columns
-          sheet.set_clip(pygame.Rect(sprt_rect_x, sprt_rect_y, len_sprt_x, len_sprt_y)) #find sprite you want
-          sprite = sheet.subsurface(sheet.get_clip()) #grab the sprite you want
-          
-          sprites.append(sprite)
-          sprt_rect_x += len_sprt_x
 
-      sprt_rect_y += len_sprt_y
-      sprt_rect_x = 0
-  return sprites
-spritesheet = sprite_sheet(16,'assets/world/spritesheet.png')
 
-player = Player({"s": [spritesheet[120], spritesheet[121],spritesheet[122]], "n": [spritesheet[165], spritesheet[166], spritesheet[167]], "e":[spritesheet[150], spritesheet[151], spritesheet[152]], "w": [spritesheet[135], spritesheet[136], spritesheet[137]]}, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 100, 20, 15, 15, 7, 10, 10, 100)
+player = Player({"s": [spritesheet.sprites[120], spritesheet.sprites[121],spritesheet.sprites[122]], "n": [spritesheet.sprites[165], spritesheet.sprites[166], spritesheet.sprites[167]], "e":[spritesheet.sprites[150], spritesheet.sprites[151], spritesheet.sprites[152]], "w": [spritesheet.sprites[135], spritesheet.sprites[136], spritesheet.sprites[137]]}, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 100, 20, 15, 15, 7, 10, 10, 100)
 entities = []
+currentMap = testTown
 
 
 
@@ -149,7 +125,9 @@ while True:
 
 
   elif gameState == "overworld":
-    screen.blit(testTown, (scene_pos_x,scene_pos_y))
+    currentMap.surface = pygame.transform.scale(currentMap.surface, (currentMap.wpix * scale, currentMap.hpix * scale))
+    screen.blit(currentMap.surface, (scene_pos_x,scene_pos_y))
+    # print(player.x, player.y, currentMap.csv[0])
     for entity in entities:
       entity.draw(screen)
     player.draw(screen)

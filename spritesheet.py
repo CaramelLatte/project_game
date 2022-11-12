@@ -1,0 +1,68 @@
+import pygame,csv,os
+from math import floor
+class Sprites:
+  def __init__(self,size,file) -> None:
+     self.file = file
+     self.size = size
+     self.sprites = self.generate_sheet()
+
+  def generate_sheet(self):
+
+    len_sprt_x = self.size
+    len_sprt_y = self.size
+    sprt_rect_x = 0 
+    sprt_rect_y = 0
+
+    sheet = pygame.image.load(self.file).convert_alpha()
+    sheet_rect = sheet.get_rect()
+    sprites = []
+    for i in range(0,sheet_rect.height-len_sprt_y,self.size):
+        for i in range(0,sheet_rect.width-len_sprt_x,self.size):
+            sheet.set_clip(pygame.Rect(sprt_rect_x, sprt_rect_y, len_sprt_x, len_sprt_y))
+            sprite = sheet.subsurface(sheet.get_clip())
+            sprites.append(sprite)
+            sprt_rect_x += len_sprt_x
+
+        sprt_rect_y += len_sprt_y
+        sprt_rect_x = 0
+    return sprites
+
+class Map:
+  def __init__(self,csv, startx, starty, spritesheet):
+    self.csv = self.read_csv(csv)
+    self.startx = startx
+    self.starty = starty
+    self.spritesheet = spritesheet
+    self.w = len(self.csv[0])
+    self.wpix = self.w * 16
+    self.h = len(self.csv)
+    self.hpix = self.h * 16
+    self.surface = pygame.Surface((self.wpix, self.hpix))
+    self.draw_map()
+
+  def read_csv(self, filename):
+    map = []
+    with open(os.path.join(filename)) as data:
+        data = csv.reader(data, delimiter=',')
+        for row in data:
+            map.append(list(row))
+    return map
+  
+  def draw_map(self):
+    x = 0 
+    y = 0
+    row = 1
+    offset = 0
+    csv = self.csv
+    for list in csv:
+      for item in list:
+        sprite = self.spritesheet.sprites[int(item) - floor(int(item) / 16)]
+        self.surface.blit(sprite, (x,y))
+        x += 16
+      y+=16
+      row+=1
+      x = 0
+
+
+
+
