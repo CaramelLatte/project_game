@@ -1,10 +1,11 @@
 import pygame,csv,os
 from math import floor
 class Sprites:
-  def __init__(self,size,file) -> None:
+  def __init__(self,size,file, impassible = None):
      self.file = file
      self.size = size
      self.sprites = self.generate_sheet()
+     self.impassible = impassible
 
   def generate_sheet(self):
 
@@ -28,8 +29,9 @@ class Sprites:
     return sprites
 
 class Map:
-  def __init__(self,csv, startx, starty, spritesheet):
+  def __init__(self,csv, collision, startx, starty, spritesheet):
     self.csv = self.read_csv(csv)
+    self.collision = self.read_csv(collision)
     self.startx = startx
     self.starty = starty
     self.spritesheet = spritesheet
@@ -38,7 +40,8 @@ class Map:
     self.h = len(self.csv)
     self.hpix = self.h * 16
     self.surface = pygame.Surface((self.wpix, self.hpix))
-    self.draw_map()
+    self.draw_map(self.csv)
+    self.draw_map(self.collision)
 
   def read_csv(self, filename):
     map = []
@@ -48,21 +51,12 @@ class Map:
             map.append(list(row))
     return map
   
-  def draw_map(self):
-    x = 0 
-    y = 0
-    row = 1
-    offset = 0
-    csv = self.csv
-    for list in csv:
-      for item in list:
-        sprite = self.spritesheet.sprites[int(item) - floor(int(item) / 16)]
-        self.surface.blit(sprite, (x,y))
-        x += 16
-      y+=16
-      row+=1
-      x = 0
-
+  def draw_map(self, file):
+    for idxy, list in enumerate(file):
+      for idxx,item in enumerate(list):
+        if item != '-1':
+          sprite = self.spritesheet.sprites[int(item) - floor(int(item) / 16)]
+          self.surface.blit(sprite, (idxx*16,idxy*16))
 
 
 
