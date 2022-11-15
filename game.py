@@ -23,33 +23,124 @@ encounterRates = {"frequent": 1000, "medium": 2500, "rare": 5000, "none": 0}
 sounds = {"bonk": pygame.mixer.Sound("assets/sounds/bonk.ogg")}
 bonksound = pygame.mixer.Sound("assets/sounds/bonk.ogg")
 
+spritesheet = Sprites(16,'assets/world/spritesheet.png', [13])
+testTown = Map('mapbuild/test1.csv','mapbuild/test2.csv', 10, 10, spritesheet)
+currentMap = testTown
+entity_layer = pygame.Surface((currentMap.wpix, currentMap.hpix))
+entity_layer.set_colorkey((0,0,0))
 
+
+
+
+
+####################################################################################################################
+########################################    ENTITY    ##############################################################
+####################################################################################################################
 class Entity:
   def __init__(self, imgs, coords, hp, mp, strength, defense, intelligence, spirit, luck, exp):
     self.img = None
     self.imgs = imgs
     self.rect = None
-    self.x = 0
-    self.y = 0
     self.coords = coords
+    self.x = self.coords[0] 
+    self.y = self.coords[1]
     self.moving = ""
     self.facing = "s"
+    self.move_chance = 100
+    self.move_cooldown = 300
     self.pixels_per_action = 16 * scale
     self.pixels_per_frame = 1
     self.stats = {"hp": hp, "mp": mp, "strength": strength, "defense": defense, "intelligence": intelligence, "spirit": spirit, "luck": luck, "exp": exp}
   
-  # def draw(self, screen):
-  #     self.move()
-  #     if self.pixels_per_action >= 8:
-  #       self.img = self.imgs[self.facing][1]
-  #     elif self.pixels_per_action >= 1:
-  #       self.img = self.imgs[self.facing][2]
-  #     else:
-  #       self.img = self.imgs[self.facing][0]
-  #     self.img = pygame.transform.scale(self.img, ((self.img.get_width() * scale) + 8, (self.img.get_height() * scale) + 8))
-  #     screen.blit(self.img, self.coords)
-      
+  def check_collision(self, map, sprites):
+    collision_check = map.collision
+    collision_tiles = sprites.impassible
+    movable_list = []
+    check_vals = (floor(self.x / (16*scale)), floor((self.y+2) /(16*scale)))
+    if int(collision_check[check_vals[1]-1][check_vals[0]]) not in collision_tiles:
+      movable_list.append("n")
+    if int(collision_check[check_vals[1]+1][check_vals[0]]) not in collision_tiles:
+      movable_list.append("s")
+    if int(collision_check[check_vals[1]][check_vals[0]+1]) not in collision_tiles:
+      movable_list.append("e")
+    if int(collision_check[check_vals[1]][check_vals[0]-1]) not in collision_tiles:
+      movable_list.append("w")
+    return movable_list
 
+
+  def move(self):
+
+    if self.moving == "" and self.move_cooldown == 300:
+      roll_to_move = random.randint(0, self.move_chance)
+      if roll_to_move == 1:
+        directions = self.check_collision(currentMap, spritesheet)
+        direction = random.randint(0, (len(directions) - 1))      
+        match directions[direction]:
+          case "n":
+            self.y -= 1
+            self.pixels_per_action -= 2
+            self.moving = "n"
+            self.facing = self.moving
+            self.move_cooldown -= 1
+          case "s":
+            self.y += 1
+            self.pixels_per_action -= 2
+            self.moving = "s"
+            self.facing = self.moving
+            self.move_cooldown -= 1
+          case "e":
+            self.x += 1
+            self.pixels_per_action -= 2
+            self.moving = "e"
+            self.facing = self.moving
+            self.move_cooldown -= 1
+          case "w":
+            self.x -= 1
+            self.pixels_per_action -= 2
+            self.moving = "w"
+            self.facing = self.moving
+            self.move_cooldown -= 1
+    elif self.pixels_per_action > 0:
+      if self.moving == "n":
+        self.y -= 1
+        self.pixels_per_action -= self.pixels_per_frame
+        self.facing = self.moving
+        self.move_cooldown -= 1
+      if self.moving == "s":
+        self.y += 1
+        self.pixels_per_action -= self.pixels_per_frame
+        self.facing = self.moving
+        self.move_cooldown -= 1
+      if self.moving == "w":
+        self.x -= 1
+        self.pixels_per_action -= self.pixels_per_frame
+        self.facing = self.moving
+        self.move_cooldown -= 1
+      if self.moving == "e":
+        self.x += 1
+        self.pixels_per_action -= self.pixels_per_frame
+        self.facing = self.moving
+        self.move_cooldown -= 1
+    else:
+      self.pixels_per_action = 16 * scale
+      self.move_cooldown = 300
+      self.moving = ""
+
+  def draw(self):
+      self.move()
+      if self.pixels_per_action >= 8:
+        self.img = self.imgs[self.facing][1]
+      elif self.pixels_per_action >= 1:
+        self.img = self.imgs[self.facing][2]
+      else:
+        self.img = self.imgs[self.facing][0]
+      self.img = pygame.transform.scale(self.img, ((self.img.get_width() * scale) + 8, (self.img.get_height() * scale) + 8))
+      entity_layer.blit(self.img, (self.x, self.y-18))
+####################################################################################################################
+
+####################################################################################################################
+########################################    PLAYER    ##############################################################
+####################################################################################################################
 class Player(Entity):
   def __init__(self, imgs, coords, hp, mp, strength, defense, intelligence, spirit, luck, exp):
     super().__init__(imgs, coords, hp, mp, strength, defense, intelligence, spirit, luck, exp)
@@ -70,6 +161,7 @@ class Player(Entity):
       self.img = self.imgs[self.facing][0]
     self.img = pygame.transform.scale(self.img, ((self.img.get_width() * scale) + 8, (self.img.get_height() * scale) + 8))
     screen.blit(self.img, self.coords)
+
 
   def move(self, map, sprites):
     global scene_pos_x
@@ -146,16 +238,16 @@ class Player(Entity):
     else:
       self.pixels_per_action = 16 * scale
       self.moving = ""
+#############################################################################################################################
 
 
-spritesheet = Sprites(16,'assets/world/spritesheet.png', [13])
-
-testTown = Map('mapbuild/test1.csv','mapbuild/test2.csv', 10, 10, spritesheet)
 
 player = Player({"s": [spritesheet.sprites[120], spritesheet.sprites[121],spritesheet.sprites[122]], "n": [spritesheet.sprites[165], spritesheet.sprites[166], spritesheet.sprites[167]], "e":[spritesheet.sprites[150], spritesheet.sprites[151], spritesheet.sprites[152]], "w": [spritesheet.sprites[135], spritesheet.sprites[136], spritesheet.sprites[137]]}, (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2), 100, 20, 15, 15, 7, 10, 10, 100)
 
-entities = []
-currentMap = testTown
+testNPC = Entity({"s": [spritesheet.sprites[123], spritesheet.sprites[124],spritesheet.sprites[125]], "n": [spritesheet.sprites[168], spritesheet.sprites[169], spritesheet.sprites[170]], "e":[spritesheet.sprites[153], spritesheet.sprites[154], spritesheet.sprites[155]], "w": [spritesheet.sprites[138], spritesheet.sprites[139], spritesheet.sprites[140]]}, (10 * (16*scale),10*(16*scale)), 1,1,1,1,1,1,1,1)
+
+npc_entities = [testNPC]
+enemy_party = []
 
 player.update_coords(currentMap)
 
@@ -188,9 +280,14 @@ while True:
     screen.fill((0,0,0))
     currentMap.surface = pygame.transform.scale(currentMap.surface, (currentMap.wpix * scale, currentMap.hpix * scale))
     screen.blit(currentMap.surface, (scene_pos_x,scene_pos_y))
+    
+
     #####################################################M MOVE AND DRAW ENTITIES
-    for entity in entities:
-      entity.draw(screen)
+    entity_layer = pygame.Surface((currentMap.wpix, currentMap.hpix))
+    entity_layer.set_colorkey((0,0,0))
+    for entity in npc_entities:
+      entity.draw()
+    screen.blit(entity_layer, (scene_pos_x, scene_pos_y))
     player.draw(screen, currentMap, spritesheet)
     if player.moving != "":
       randomBattleChance = random.randint(0, encounterRates["medium"])
@@ -212,4 +309,3 @@ while True:
 
   pygame.display.update()
   clock.tick(CLOCK_TICK)
-
