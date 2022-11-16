@@ -1,11 +1,12 @@
 import pygame,csv,os
 from math import floor
 class Sprites:
-  def __init__(self,size,file, impassible = None):
+  def __init__(self,size,file, impassible = None, interactable = None):
      self.file = file
      self.size = size
      self.sprites = self.generate_sheet()
      self.impassible = impassible
+     self.interactable = interactable
 
   def generate_sheet(self):
 

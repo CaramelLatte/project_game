@@ -8,7 +8,7 @@ from soundlibrary import *
 ########################################    ENTITY    ##############################################################
 ####################################################################################################################
 class Entity:
-  def __init__(self, imgs, coords, stats, move_chance=None, move_cooldown=None):
+  def __init__(self, imgs, coords, stats, move_chance=None, move_cooldown=None, interactions=None):
     self.img = None
     self.imgs = imgs
     self.rect = None
@@ -23,12 +23,18 @@ class Entity:
     self.pixels_per_action = SPRITE_PIXELS * SCALE
     self.pixels_per_frame = 1
     self.stats = stats
+    self.interactions = interactions
+    self.interactions_counter = 1
   
+  def map_coords(self):
+      check_vals = (floor(self.x / (SPRITE_PIXELS*SCALE)), floor((self.y+2) /(SPRITE_PIXELS*SCALE)))
+      return check_vals
+
   def check_collision(self, map, sprites):
     collision_check = map.collision
     collision_tiles = sprites.impassible
     movable_list = []
-    check_vals = (floor(self.x / (SPRITE_PIXELS*SCALE)), floor((self.y+2) /(SPRITE_PIXELS*SCALE)))
+    check_vals = self.map_coords()
     if int(collision_check[check_vals[1]-1][check_vals[0]]) not in collision_tiles:
       movable_list.append("n")
     if int(collision_check[check_vals[1]+1][check_vals[0]]) not in collision_tiles:
@@ -107,6 +113,12 @@ class Entity:
         self.img = self.imgs[self.facing][0]
       self.img = pygame.transform.scale(self.img, ((self.img.get_width() * SCALE) + 8, (self.img.get_height() * SCALE) + 8))
       layer.blit(self.img, (self.x, self.y-18))
+  
+  def interacted_with(self):
+
+    print(self.interactions[self.interactions_counter])
+    if self.interactions_counter < len(self.interactions):
+      self.interactions_counter += 1
 ####################################################################################################################
 
 
@@ -122,9 +134,21 @@ class Player(Entity):
     self.x = map.startx
     self.y = map.starty
 
-
-  def draw(self, screen, map,sprites, scene_pos_x, scene_pos_y):
-    update_scene = self.move(map,sprites,scene_pos_x, scene_pos_y)
+  def looking_at(self):
+    x = self.x
+    y = self.y
+    match self.facing:
+      case "n":
+        y -= 1 
+      case "s":
+        y += 1
+      case "e":
+        x += 1
+      case "w":
+        x -= 1
+    return (x, y)
+  def draw(self, screen, map,sprites, scene_pos_x, scene_pos_y, entities):
+    update_scene = self.move(map,sprites,scene_pos_x, scene_pos_y, entities)
     if self.pixels_per_action >= 8:
       self.img = self.imgs[self.facing][1]
     elif self.pixels_per_action >= 1:
@@ -135,29 +159,43 @@ class Player(Entity):
     screen.blit(self.img, self.coords)
     return update_scene
 
-  def move(self, map, sprites, scene_pos_x, scene_pos_y):
+  def move(self, map, sprites, scene_pos_x, scene_pos_y, entities):
     collision_check = map.collision
     collision_tiles = sprites.impassible
+    interact_check = sprites.interactable
+    npc_coords = []
+    for npc in entities:
+      npc_at = npc.map_coords()
+      npc_coords.append(npc_at)
     if self.moving == "":
       keys = pygame.key.get_pressed()
       if keys[pygame.K_w] or keys[pygame.K_UP]:
-        if int(collision_check[self.y-1][self.x]) in collision_tiles:
-          self.facing = "n"
+        self.facing = "n"
+        looking_at = self.looking_at()
+        check = int(collision_check[looking_at[1]][looking_at[0]])
+        if check in collision_tiles:
           self.collision = True
           if self.collision_timer == 60:
             pygame.mixer.Sound.play(sounds["bonk"])
+        elif looking_at in npc_coords or check in interact_check:
+          pass
         else:
           self.y -= 1
           scene_pos_y += 2
           self.pixels_per_action -= 2
           self.moving = "n"
-          self.facing = self.moving
+          # self.facing = self.moving
       elif keys[pygame.K_s] or keys[pygame.K_DOWN]:
-        if int(collision_check[self.y+1][self.x]) in collision_tiles:
+        self.facing = "s"
+        looking_at = self.looking_at()
+        check = int(collision_check[looking_at[1]][looking_at[0]])
+        if check in collision_tiles:
           self.facing = "s"
           self.collision = True
           if self.collision_timer == 60:
             pygame.mixer.Sound.play(sounds["bonk"])
+        elif looking_at in npc_coords or check in interact_check:
+          pass
         else:
           self.y += 1
           scene_pos_y -= 2
@@ -165,11 +203,16 @@ class Player(Entity):
           self.moving = "s"
           self.facing = self.moving
       elif keys[pygame.K_a] or keys[pygame.K_LEFT]:
-        if int(collision_check[self.y][self.x-1]) in collision_tiles:
+        self.facing = "w"
+        looking_at = self.looking_at()
+        check = int(collision_check[looking_at[1]][looking_at[0]])
+        if check in collision_tiles:
           self.facing = "w"
           self.collision = True
           if self.collision_timer == 60:
             pygame.mixer.Sound.play(sounds["bonk"])
+        elif looking_at in npc_coords or check in interact_check:
+          pass
         else:
           self.x -= 1
           scene_pos_x += 2
@@ -177,11 +220,16 @@ class Player(Entity):
           self.moving = "w"
           self.facing = self.moving
       elif keys[pygame.K_d] or keys[pygame.K_RIGHT]:
-        if int(collision_check[self.y][self.x+1]) in collision_tiles:
+        self.facing = "e"
+        looking_at = self.looking_at()
+        check = int(collision_check[looking_at[1]][looking_at[0]])
+        if check in collision_tiles:
           self.facing = "e"
           self.collision = True
           if self.collision_timer == 60:
             pygame.mixer.Sound.play(sounds["bonk"])
+        elif looking_at in npc_coords or check in interact_check:
+          pass
         else:
           self.x += 1
           scene_pos_x -= 2
@@ -209,4 +257,18 @@ class Player(Entity):
       self.pixels_per_action = SPRITE_PIXELS * SCALE
       self.moving = ""
     return [scene_pos_x, scene_pos_y]
+
+  def interact(self, map, sprites, entities):
+    looking_at = self.looking_at()
+    entity_check = map.collision
+    interact_tiles = sprites.interactable 
+    if int(entity_check[looking_at[1]][looking_at[0]]) in interact_tiles:
+      print("clicked")
+    
+    for entity in entities:
+      entity_coords = entity.map_coords()
+      if entity_coords == looking_at:
+        entity.interacted_with()
+      
+
 #############################################################################################################################
