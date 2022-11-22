@@ -17,9 +17,6 @@ import entitylibrary
 
 locations = {"test": "assets/world/test.png"}
 encounterRates = {"frequent": 1000, "medium": 2500, "rare": 5000, "none": 0}
-sounds = {"bonk": pygame.mixer.Sound("assets/sounds/bonk.ogg")}
-bonksound = pygame.mixer.Sound("assets/sounds/bonk.ogg")
-
 spritesheet = Sprites(SPRITE_PIXELS,'assets/world/spritesheet.png', [13,69], [89])
 testTown = Map('mapbuild/test1.csv','mapbuild/test2.csv', 10, 10, spritesheet)
 currentMap = testTown
@@ -35,9 +32,10 @@ testNPC = Entity(entitylibrary.girl[0], entitylibrary.girl[1], entitylibrary.gir
 
 npc_entities = [testNPC]
 enemy_party = []
+ally_party = []
 
 player.update_coords(currentMap)
-gameState = "battle"
+gameState = "title"
 scene_pos = [(SPRITE_PIXELS * 0) * SCALE, (SPRITE_PIXELS * -2) * SCALE]
 
 while True:
@@ -80,7 +78,7 @@ while True:
     for entity in npc_entities:
       entity.draw(currentMap, entity_layer, spritesheet)
     screen.blit(entity_layer, [scene_pos[0], scene_pos[1]])
-    scene_pos = player.draw(SCREEN, currentMap, spritesheet, scene_pos[0], scene_pos[1], npc_entities)
+    scene_pos = player.draw(screen, currentMap, spritesheet, scene_pos[0], scene_pos[1], npc_entities)
 
     if player.moving != "":
       randomBattleChance = random.randint(0, encounterRates["medium"])
@@ -101,7 +99,6 @@ while True:
     uiSurface.fill("green")
     uiSurface.set_alpha(50)
     screen.blit(uiSurface, (0, floor(SCREEN_HEIGHT*.8)))
-
 
 
     enemySurface = pygame.Surface((SCREEN_WIDTH/2, SCREEN_HEIGHT*.8))
