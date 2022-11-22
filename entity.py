@@ -8,7 +8,7 @@ from soundlibrary import *
 ########################################    ENTITY    ##############################################################
 ####################################################################################################################
 class Entity:
-  def __init__(self, imgs, coords, stats, move_chance=None, move_cooldown=None, interactions=None):
+  def __init__(self, imgs, coords, move_chance=None, move_cooldown=None, interactions=None):
     self.img = None
     self.imgs = imgs
     self.rect = None
@@ -22,7 +22,6 @@ class Entity:
     self.move_cooldown_tick = move_cooldown
     self.pixels_per_action = SPRITE_PIXELS * SCALE
     self.pixels_per_frame = 1
-    self.stats = stats
     self.interactions = interactions
     self.interactions_counter = 1
   
@@ -126,8 +125,8 @@ class Entity:
 ########################################    PLAYER    ##############################################################
 ####################################################################################################################
 class Player(Entity):
-  def __init__(self, imgs, coords, stats):
-    super().__init__(imgs, coords, stats)
+  def __init__(self, imgs, coords):
+    super().__init__(imgs, coords)
     self.collision_timer = 60
     self.collision = False
   def update_coords(self, map):

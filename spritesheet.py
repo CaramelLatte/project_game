@@ -30,9 +30,10 @@ class Sprites:
     return sprites
 
 class Map:
-  def __init__(self,csv, collision, startx, starty, spritesheet):
+  def __init__(self, csv, collision, startx, starty, spritesheet, effect=None):
     self.csv = self.read_csv(csv)
     self.collision = self.read_csv(collision)
+    self.effect = self.read_csv(effect)
     self.startx = startx
     self.starty = starty
     self.spritesheet = spritesheet
@@ -43,8 +44,11 @@ class Map:
     self.surface = pygame.Surface((self.wpix, self.hpix))
     self.draw_map(self.csv)
     self.draw_map(self.collision)
+    self.draw_map(self.effect)
 
   def read_csv(self, filename):
+    if filename == None:
+      return
     map = []
     with open(os.path.join(filename)) as data:
         data = csv.reader(data, delimiter=',')
@@ -53,6 +57,8 @@ class Map:
     return map
   
   def draw_map(self, file):
+    if file == None:
+      return
     for idxy, list in enumerate(file):
       for idxx,item in enumerate(list):
         if item != '-1':
