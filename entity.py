@@ -268,6 +268,12 @@ class Player(Entity):
       entity_coords = entity.map_coords()
       if entity_coords == looking_at:
         entity.interacted_with()
-      
-
 #############################################################################################################################
+
+class BattlePartyMember(Entity):
+  def __init__(self, imgs, stats):
+    super().__init__(imgs)
+    self.stats = stats
+
+  def draw(self, screen):
+    pass

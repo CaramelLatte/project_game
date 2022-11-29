@@ -87,7 +87,6 @@ while True:
 
 
 
-
   elif gameState == "battle":
     screen.fill((0,0,0))
     backgroundSurface = pygame.image.load("assets/world/background.png")
