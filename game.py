@@ -27,15 +27,16 @@ entity_layer.set_colorkey((0,0,0))
 
 
 player = Player(entitylibrary.hero, (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
+playerBattleEntity = BattlePartyAlly(entitylibrary.hero, {"str": 15, "def": 15, "mag": 6, "spr": 10, "luck": 10})
 
 testNPC = Entity(entitylibrary.girl[0], entitylibrary.girl[1], entitylibrary.girl[2], entitylibrary.girl[3], entitylibrary.girl[4])
 
 npc_entities = [testNPC]
 enemy_party = []
-ally_party = []
+ally_party = [playerBattleEntity, playerBattleEntity, playerBattleEntity, playerBattleEntity]
 
 player.update_coords(currentMap)
-gameState = "title"
+gameState = "battle"
 scene_pos = [(SPRITE_PIXELS * 0) * SCALE, (SPRITE_PIXELS * -2) * SCALE]
 
 while True:
@@ -107,8 +108,9 @@ while True:
 
 
     partySurface = pygame.Surface((SCREEN_WIDTH/2, SCREEN_HEIGHT*.8))
-    partySurface.fill("red")
-    partySurface.set_alpha(100)
+    partySurface.set_colorkey((0,0,0))
+    for idx, ally in enumerate(ally_party):
+      ally.draw(partySurface, idx)
     screen.blit(partySurface, (SCREEN_WIDTH/2, 0))
 
     
