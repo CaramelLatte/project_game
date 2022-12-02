@@ -18,6 +18,7 @@ import entitylibrary
 locations = {"test": "assets/world/test.png"}
 encounterRates = {"frequent": 1000, "medium": 2500, "rare": 5000, "none": 0}
 spritesheet = Sprites(SPRITE_PIXELS,'assets/world/spritesheet.png', [13,69], [89])
+# enemySprites = Sprites(SPRITE_PIXELS, 'assets/entities/rpgcritters2.png')
 testTown = Map('mapbuild/test1.csv','mapbuild/test2.csv', 10, 10, spritesheet)
 currentMap = testTown
 entity_layer = pygame.Surface((currentMap.wpix, currentMap.hpix))
@@ -27,16 +28,18 @@ entity_layer.set_colorkey((0,0,0))
 
 
 player = Player(entitylibrary.hero, (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
-playerBattleEntity = BattlePartyAlly(entitylibrary.hero, {"str": 15, "def": 15, "mag": 6, "spr": 10, "luck": 10})
+playerBattleEntity = BattleAlly(entitylibrary.hero, {"str": 15, "def": 15, "mag": 6, "spr": 10, "luck": 10})
 
 testNPC = Entity(entitylibrary.girl[0], entitylibrary.girl[1], entitylibrary.girl[2], entitylibrary.girl[3], entitylibrary.girl[4])
 
 npc_entities = [testNPC]
-enemy_party = []
+# testenemy = BattleEnemy(entitylibrary.skeleton[0], entitylibrary.skeleton[1], entitylibrary.skeleton[2], entitylibrary.skeleton[3], entitylibrary.skeleton[4])
+testenemy = BattleEnemy(entitylibrary.skeleton[0], {"str": 15, "def": 15, "mag": 6, "spr": 10, "luck": 10})
+enemy_party = [testenemy, testenemy, testenemy, testenemy,testenemy, None, testenemy, testenemy,testenemy, testenemy, testenemy, testenemy]
 ally_party = [playerBattleEntity, playerBattleEntity, playerBattleEntity, playerBattleEntity]
 
 player.update_coords(currentMap)
-gameState = "battle"
+gameState = "title"
 scene_pos = [(SPRITE_PIXELS * 0) * SCALE, (SPRITE_PIXELS * -2) * SCALE]
 
 while True:
@@ -102,8 +105,10 @@ while True:
 
 
     enemySurface = pygame.Surface((SCREEN_WIDTH/2, SCREEN_HEIGHT*.8))
-    enemySurface.fill("blue")
-    enemySurface.set_alpha(100)
+    enemySurface.set_colorkey((0,0,0))
+    for idx, enemy in enumerate(enemy_party):
+      if enemy is not None:
+        enemy.draw(enemySurface, idx)
     screen.blit(enemySurface, (0,0))
 
 

@@ -270,7 +270,7 @@ class Player(Entity):
         entity.interacted_with()
 #############################################################################################################################
 
-class BattlePartyAlly():
+class BattleAlly():
   def __init__(self, imgs, stats):
     self.imgs = imgs
     self.img = None
@@ -279,3 +279,25 @@ class BattlePartyAlly():
     self.img = self.imgs["w"][0]
     self.img = pygame.transform.scale(self.img, ((self.img.get_width() * SCALE) + 8, (self.img.get_height() * SCALE) + 8))
     surface.blit(self.img, (surface.get_width() / 2, (surface.get_height() - 80-(idx*75))))
+
+class BattleEnemy():
+  def __init__(self, imgs, stats):
+    self.imgs = imgs
+    self.stats = stats
+
+  def arrangeParty(self,idx):
+    column = .75
+    row = 80+(idx*75)
+    if idx > 3:
+      column -= .25
+      resetRow = 80+(idx%4)*75
+      row = resetRow
+    if idx > 7:
+      column -= .25
+    return [column, row]
+
+  def draw(self, surface, idx):
+    self.img = self.imgs["e"][0]
+    self.img = pygame.transform.scale(self.img, ((self.img.get_width() * SCALE) + 8, (self.img.get_height() * SCALE) + 8))
+    plot = self.arrangeParty(idx)
+    surface.blit(self.img, (surface.get_width() * plot[0], (surface.get_height() - plot[1])))
