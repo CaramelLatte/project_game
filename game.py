@@ -35,7 +35,7 @@ testNPC = Entity(entitylibrary.girl[0], entitylibrary.girl[1], entitylibrary.gir
 npc_entities = [testNPC]
 # testenemy = BattleEnemy(entitylibrary.skeleton[0], entitylibrary.skeleton[1], entitylibrary.skeleton[2], entitylibrary.skeleton[3], entitylibrary.skeleton[4])
 testenemy = BattleEnemy(entitylibrary.skeleton[0], {"str": 15, "def": 15, "mag": 6, "spr": 10, "luck": 10})
-enemy_party = [testenemy, testenemy, testenemy, testenemy,testenemy, None, testenemy, testenemy,testenemy, testenemy, testenemy, testenemy]
+enemy_party = [testenemy, None, None, testenemy,testenemy, testenemy, testenemy, testenemy,testenemy, testenemy, testenemy, testenemy]
 ally_party = [playerBattleEntity, playerBattleEntity, playerBattleEntity, playerBattleEntity]
 
 player.update_coords(currentMap)
@@ -99,8 +99,8 @@ while True:
 
 
     uiSurface = pygame.Surface((SCREEN_WIDTH, floor(SCREEN_HEIGHT/5)))
-    uiSurface.fill("green")
-    uiSurface.set_alpha(50)
+    
+    uiSurface.set_colorkey((0,0,0))
     screen.blit(uiSurface, (0, floor(SCREEN_HEIGHT*.8)))
 
 

@@ -285,7 +285,7 @@ class BattleEnemy():
     self.imgs = imgs
     self.stats = stats
 
-  def arrangeParty(self,idx):
+  def arrangeParty(self, idx):
     column = .75
     row = 80+(idx*75)
     if idx > 3:

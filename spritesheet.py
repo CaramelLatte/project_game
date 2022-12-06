@@ -64,6 +64,3 @@ class Map:
         if item != '-1':
           sprite = self.spritesheet.sprites[int(item) - floor(int(item) / 16)]
           self.surface.blit(sprite, (idxx*16,idxy*16))
-
-
-
