@@ -19,6 +19,7 @@ locations = {"test": "assets/world/test.png"}
 encounterRates = {"frequent": 1000, "medium": 2500, "rare": 5000, "none": 0}
 spritesheet = Sprites(SPRITE_PIXELS,'assets/world/spritesheet.png', [13,69], [89])
 # enemySprites = Sprites(SPRITE_PIXELS, 'assets/entities/rpgcritters2.png')
+uiSprites = Sprites(SPRITE_PIXELS, "assets/ui/gui_free.png")
 testTown = Map('mapbuild/test1.csv','mapbuild/test2.csv', 10, 10, spritesheet)
 currentMap = testTown
 entity_layer = pygame.Surface((currentMap.wpix, currentMap.hpix))
@@ -94,15 +95,14 @@ while True:
   elif gameState == "battle":
     screen.fill((0,0,0))
     backgroundSurface = pygame.image.load("assets/world/background.png")
-    backgroundSurface = pygame.transform.scale(backgroundSurface, (SCREEN_WIDTH, floor(SCREEN_HEIGHT*.8)))
+    backgroundSurface = pygame.transform.scale(backgroundSurface, (SCREEN_WIDTH, SCREEN_HEIGHT))
     screen.blit(backgroundSurface, (0,0))
 
-
     uiSurface = pygame.Surface((SCREEN_WIDTH, floor(SCREEN_HEIGHT/5)))
-    
     uiSurface.set_colorkey((0,0,0))
+    battleUI = UI(uiSprites, uiSurface.get_height(), uiSurface.get_width(), "light")
+    uiSurface.blit(battleUI.surface, (0,0))
     screen.blit(uiSurface, (0, floor(SCREEN_HEIGHT*.8)))
-
 
     enemySurface = pygame.Surface((SCREEN_WIDTH/2, SCREEN_HEIGHT*.8))
     enemySurface.set_colorkey((0,0,0))
@@ -110,7 +110,6 @@ while True:
       if enemy is not None:
         enemy.draw(enemySurface, idx)
     screen.blit(enemySurface, (0,0))
-
 
     partySurface = pygame.Surface((SCREEN_WIDTH/2, SCREEN_HEIGHT*.8))
     partySurface.set_colorkey((0,0,0))
@@ -121,7 +120,6 @@ while True:
     
   else:
     pass
-
-
+  
   pygame.display.update()
   CLOCK.tick(CLOCK_TICK)
