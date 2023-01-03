@@ -116,8 +116,13 @@ class UI:
 
   def write_options(self):
 
-    for option in self.options:
-      print(option)
+    for idx, option in enumerate(self.options):
+      if idx <= 3:
+        option_x = 32
+        option_y = 16+(idx*16)
+        option_font = self.font.render(option, True, (42,46,43))
+        
+        self.surface.blit(option_font, (option_x, option_y) )
 
 
 
