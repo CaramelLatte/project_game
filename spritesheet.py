@@ -124,6 +124,10 @@ class UI:
         
         self.surface.blit(option_font, (option_x, option_y) )
 
+    selector = self.font.render(">", True, (42,46,43))
+    selected = self.options[0]
+    self.surface.blit(selector,(16,(16+self.options.index(selected)*16)))
+
 
 
 
