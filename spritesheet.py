@@ -66,8 +66,9 @@ class Map:
           self.surface.blit(sprite, (idxx*16,idxy*16))
 
 class UI:
-  def __init__(self, spritesheet, height, width, colorkey, coords=(0,0)):
+  def __init__(self, spritesheet, font, height, width, colorkey, options=None, coords=(0,0)):
     self.spritesheet = spritesheet
+    self.font = font
     self.height = height
     self.width = width
     self.colorkey = colorkey
@@ -75,8 +76,10 @@ class UI:
     self.imgs = []
     self.coords = coords
     self.selected = None
+    self.options = options
     self.set_color()
     self.draw_background()
+    self.write_options()
 
   def set_color(self):
     if self.colorkey == "light":
@@ -100,7 +103,7 @@ class UI:
           if idxx == 0:
             self.surface.blit(self.imgs[3], (idxx*16, idxy*16))
           elif (idxx*16) + 16 < self.width:
-            self.surface.blit(self.imgs[4], (idxx*16,idxy*16))
+            self.surface.blit(self.imgs[4], (idxx*16, idxy*16))
           elif (idxx*16) + 16 == self.width:
             self.surface.blit(self.imgs[5], (idxx*16, idxy*16))
         elif (idxy*16)+16 == self.height:
@@ -110,6 +113,12 @@ class UI:
             self.surface.blit(self.imgs[7], (idxx*16, idxy*16))
           elif (idxx*16)+16 == self.width:
             self.surface.blit(self.imgs[8], (idxx*16, idxy*16))
+
+  def write_options(self):
+
+    for option in self.options:
+      print(option)
+
 
 
 

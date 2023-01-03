@@ -40,7 +40,7 @@ enemy_party = [testenemy, None, None, testenemy,testenemy, testenemy, testenemy,
 ally_party = [playerBattleEntity, playerBattleEntity, playerBattleEntity, playerBattleEntity]
 
 player.update_coords(currentMap)
-gameState = "title"
+gameState = "battle"
 scene_pos = [(SPRITE_PIXELS * 0) * SCALE, (SPRITE_PIXELS * -2) * SCALE]
 
 while True:
@@ -100,7 +100,7 @@ while True:
 
     uiSurface = pygame.Surface((SCREEN_WIDTH, floor(SCREEN_HEIGHT/5)))
     uiSurface.set_colorkey((0,0,0))
-    battleUI = UI(uiSprites, uiSurface.get_height(), uiSurface.get_width(), "light")
+    battleUI = UI(uiSprites, FONT, uiSurface.get_height(), uiSurface.get_width(), "light", ["Attack", "Defend", "Spell", "Item"])
     uiSurface.blit(battleUI.surface, (0,0))
     screen.blit(uiSurface, (0, floor(SCREEN_HEIGHT*.8)))
 
