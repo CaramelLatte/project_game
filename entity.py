@@ -281,9 +281,10 @@ class BattleAlly():
     surface.blit(self.img, (surface.get_width() / 2, (surface.get_height() - 80-(idx*75))))
 
 class BattleEnemy():
-  def __init__(self, imgs, stats):
+  def __init__(self, imgs,name, stats):
     self.imgs = imgs
     self.stats = stats
+    self.name = name
 
   def arrangeParty(self, idx):
     column = .75

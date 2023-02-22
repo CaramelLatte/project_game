@@ -35,13 +35,20 @@ testNPC = Entity(entitylibrary.girl[0], entitylibrary.girl[1], entitylibrary.gir
 
 npc_entities = [testNPC]
 # testenemy = BattleEnemy(entitylibrary.skeleton[0], entitylibrary.skeleton[1], entitylibrary.skeleton[2], entitylibrary.skeleton[3], entitylibrary.skeleton[4])
-testenemy = BattleEnemy(entitylibrary.skeleton[0], {"str": 15, "def": 15, "mag": 6, "spr": 10, "luck": 10})
-enemy_party = [testenemy, None, None, testenemy,testenemy, testenemy, testenemy, testenemy,testenemy, testenemy, testenemy, testenemy]
+testenemy = BattleEnemy(entitylibrary.skeleton[0], "Skeleton", {"str": 15, "def": 15, "mag": 6, "spr": 10, "luck": 10})
+enemy_party = [testenemy, testenemy, testenemy, testenemy,testenemy, testenemy, testenemy, testenemy,testenemy, testenemy, testenemy, testenemy]
 ally_party = [playerBattleEntity, playerBattleEntity, playerBattleEntity, playerBattleEntity]
 
 player.update_coords(currentMap)
 gameState = "battle"
 scene_pos = [(SPRITE_PIXELS * 0) * SCALE, (SPRITE_PIXELS * -2) * SCALE]
+
+uiSurface = pygame.Surface((SCREEN_WIDTH, floor(SCREEN_HEIGHT/5)))
+uiSurface.set_colorkey((0,0,0))
+battleUI = UI(uiSprites, FONT, uiSurface.get_height(), uiSurface.get_width(), "light", ["Attack", "Defend", "Spell", "Item"])
+
+backgroundSurface = pygame.image.load("assets/world/background.png")
+backgroundSurface = pygame.transform.scale(backgroundSurface, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 while True:
   ####################################################EVENT CHECK
@@ -91,16 +98,14 @@ while True:
         gameState = "battle"
 
 
-
   elif gameState == "battle":
     screen.fill((0,0,0))
-    backgroundSurface = pygame.image.load("assets/world/background.png")
-    backgroundSurface = pygame.transform.scale(backgroundSurface, (SCREEN_WIDTH, SCREEN_HEIGHT))
-    screen.blit(backgroundSurface, (0,0))
 
-    uiSurface = pygame.Surface((SCREEN_WIDTH, floor(SCREEN_HEIGHT/5)))
-    uiSurface.set_colorkey((0,0,0))
-    battleUI = UI(uiSprites, FONT, uiSurface.get_height(), uiSurface.get_width(), "light", ["Attack", "Defend", "Spell", "Item"])
+    screen.blit(backgroundSurface, (0,0))
+    
+    battleUI.draw_background()
+    battleUI.write_menu(enemy_party)
+
     uiSurface.blit(battleUI.surface, (0,0))
     screen.blit(uiSurface, (0, floor(SCREEN_HEIGHT*.8)))
 
