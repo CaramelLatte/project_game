@@ -275,10 +275,16 @@ class BattleAlly():
     self.imgs = imgs
     self.img = None
     self.stats = stats
+    self.active = False
+
   def draw(self, surface, idx):
+
     self.img = self.imgs["w"][0]
     self.img = pygame.transform.scale(self.img, ((self.img.get_width() * SCALE) + 8, (self.img.get_height() * SCALE) + 8))
-    surface.blit(self.img, (surface.get_width() / 2, (surface.get_height() - 80-(idx*75))))
+    if self.active == False:
+      surface.blit(self.img, (surface.get_width() / 2, (surface.get_height() - 80-(idx*75))))
+    else:
+      surface.blit(self.img, (floor(surface.get_width() / 2.5), (surface.get_height() - 80-(idx*75))))
 
 class BattleEnemy():
   def __init__(self, imgs,name, stats):

@@ -29,18 +29,21 @@ entity_layer.set_colorkey((0,0,0))
 
 
 player = Player(entitylibrary.hero, (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
-playerBattleEntity = BattleAlly(entitylibrary.hero, {"str": 15, "def": 15, "mag": 6, "spr": 10, "luck": 10})
+playerBattleEntity = BattleAlly(entitylibrary.hero, {"hp": 100, "mp": 50, "str": 15, "def": 15, "mag": 6, "spr": 10, "luck": 10})
+playerBattleEntity2 = BattleAlly(entitylibrary.hero, {"hp": 100, "mp": 50, "str": 15, "def": 15, "mag": 6, "spr": 10, "luck": 10})
+playerBattleEntity3 = BattleAlly(entitylibrary.hero, {"hp": 100, "mp": 50, "str": 15, "def": 15, "mag": 6, "spr": 10, "luck": 10})
+playerBattleEntity4 = BattleAlly(entitylibrary.hero, {"hp": 100, "mp": 50, "str": 15, "def": 15, "mag": 6, "spr": 10, "luck": 10})
 
 testNPC = Entity(entitylibrary.girl[0], entitylibrary.girl[1], entitylibrary.girl[2], entitylibrary.girl[3], entitylibrary.girl[4])
 
 npc_entities = [testNPC]
 # testenemy = BattleEnemy(entitylibrary.skeleton[0], entitylibrary.skeleton[1], entitylibrary.skeleton[2], entitylibrary.skeleton[3], entitylibrary.skeleton[4])
-testenemy = BattleEnemy(entitylibrary.skeleton[0], "Skeleton", {"str": 15, "def": 15, "mag": 6, "spr": 10, "luck": 10})
+testenemy = BattleEnemy(entitylibrary.skeleton, "Skeleton", {"hp": 100, "mp": 50, "str": 15, "def": 15, "mag": 6, "spr": 10, "luck": 10})
 enemy_party = [testenemy, testenemy, testenemy, testenemy,testenemy, testenemy, testenemy, testenemy,testenemy, testenemy, testenemy, testenemy]
-ally_party = [playerBattleEntity, playerBattleEntity, playerBattleEntity, playerBattleEntity]
+ally_party = [playerBattleEntity, playerBattleEntity2, playerBattleEntity3, playerBattleEntity4]
 
 player.update_coords(currentMap)
-gameState = "battle"
+gameState = "title"
 scene_pos = [(SPRITE_PIXELS * 0) * SCALE, (SPRITE_PIXELS * -2) * SCALE]
 
 uiSurface = pygame.Surface((SCREEN_WIDTH, floor(SCREEN_HEIGHT/5)))
@@ -93,9 +96,10 @@ while True:
     scene_pos = player.draw(screen, currentMap, spritesheet, scene_pos[0], scene_pos[1], npc_entities)
 
     if player.moving != "":
-      randomBattleChance = random.randint(0, encounterRates["medium"])
+      randomBattleChance = random.randint(0, encounterRates["frequent"])
       if randomBattleChance < 10:
         gameState = "battle"
+        ally_party[0].active = True
 
 
   elif gameState == "battle":
@@ -104,7 +108,7 @@ while True:
     screen.blit(backgroundSurface, (0,0))
     
     battleUI.draw_background()
-    battleUI.write_menu(enemy_party)
+    battleUI.write_menu(ally_party, enemy_party)
 
     uiSurface.blit(battleUI.surface, (0,0))
     screen.blit(uiSurface, (0, floor(SCREEN_HEIGHT*.8)))
@@ -112,12 +116,13 @@ while True:
     enemySurface = pygame.Surface((SCREEN_WIDTH/2, SCREEN_HEIGHT*.8))
     enemySurface.set_colorkey((0,0,0))
     for idx, enemy in enumerate(enemy_party):
-      if enemy is not None:
+      if enemy is not None and enemy.stats["hp"] != 0:
         enemy.draw(enemySurface, idx)
     screen.blit(enemySurface, (0,0))
 
     partySurface = pygame.Surface((SCREEN_WIDTH/2, SCREEN_HEIGHT*.8))
     partySurface.set_colorkey((0,0,0))
+    
     for idx, ally in enumerate(ally_party):
       ally.draw(partySurface, idx)
     screen.blit(partySurface, (SCREEN_WIDTH/2, 0))

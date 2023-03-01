@@ -7,4 +7,4 @@ hero = {"s": [spritesheet.sprites[120], spritesheet.sprites[121],spritesheet.spr
 
 girl = {"s": [spritesheet.sprites[123], spritesheet.sprites[124],spritesheet.sprites[125]], "n": [spritesheet.sprites[168], spritesheet.sprites[169], spritesheet.sprites[170]], "e":[spritesheet.sprites[153], spritesheet.sprites[154], spritesheet.sprites[155]], "w": [spritesheet.sprites[138], spritesheet.sprites[139], spritesheet.sprites[140]]}, (6 * (SPRITE_PIXELS*SCALE),10*(SPRITE_PIXELS*SCALE)), 300,300, {1: "Hi!", 2: "Hi, again!", 3: "Why do you keep talking to me?"}
 
-skeleton = {"e": [spritesheet.sprites[156]]}, 
+skeleton = {"e": [spritesheet.sprites[156]]}

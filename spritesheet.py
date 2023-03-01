@@ -147,7 +147,7 @@ class UI:
               self.surface.blit(self.imgs[8], (idxx*16, idxy*16))
               
                   
-  def write_menu(self, enemy_party=None):
+  def write_menu(self, ally_party=None, enemy_party=None):
     option_list = None
     if self.state == None:
       option_list = self.options
@@ -202,6 +202,19 @@ class UI:
         elif self.state == "Attack":
           self.state = None
           self.selected = 0
+          for idx, ally in enumerate(ally_party):
+            if ally.active == True:
+              if idx == len(ally_party)-1:
+                ally_party[0].active = True
+                ally.active = False
+                
+              else:
+                ally_party[idx+1].active = True
+                ally.active = False
+                break
+          print(enemy_party, "/n", enemy_party[self.selected])
+          enemy_party[self.selected].stats["hp"] = 0
+            
         self.cursor_timeout += self.timeout
     if self.selected < 4:
       self.surface.blit(selector,(16,(16+(self.selected*16))))
